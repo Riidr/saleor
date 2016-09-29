@@ -249,7 +249,7 @@ class DeliveryGroup(models.Model, ItemSet):
                 product_sku=product_variant.sku,
                 unit_price_gross=price.gross,
                 stock=stock,
-                stock_location=stock.location if stock else None)
+                stock_location=stock.location if stock else '')
             if stock:
                 # allocate quantity to avoid overselling
                 Stock.objects.allocate_stock(stock, quantity)

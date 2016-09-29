@@ -159,6 +159,9 @@ class ProductVariant(models.Model, Item):
         return self.weight_override or self.product.weight
 
     def check_quantity(self, quantity):
+        if not self.is_shipping_required():
+            return
+
         available_quantity = self.get_stock_quantity()
         if quantity > available_quantity:
             raise InsufficientStock(self)
@@ -191,9 +194,12 @@ class ProductVariant(models.Model, Item):
             'unit_price': str(self.get_price_per_item().gross)}
 
     def is_shipping_required(self):
-        return True
+        return False
 
     def is_in_stock(self):
+        if not self.is_shipping_required():
+            return True
+
         return any(
             [stock.quantity_available > 0 for stock in self.stock.all()])
 
