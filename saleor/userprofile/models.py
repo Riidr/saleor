@@ -37,6 +37,9 @@ class Address(models.Model):
     last_name = models.CharField(
         pgettext_lazy('Address field', 'last name'),
         max_length=256)
+    birthday = models.DateField(
+        pgettext_lazy('Address field', 'birthday'),
+        null=True, blank=True)
     company_name = models.CharField(
         pgettext_lazy('Address field', 'company or organization'),
         max_length=256, blank=True)
