@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 
 from django import forms
+from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.encoding import iri_to_uri, smart_text
 try:
@@ -31,8 +32,12 @@ class CategoryChoiceField(forms.ModelChoiceField):
         return '%s%s' % (indent, smart_text(obj))
 
 
-def build_absolute_uri(location, is_secure=False):
+def build_absolute_uri(location, is_secure=None):
     from django.contrib.sites.models import Site
+
+    if is_secure is None:
+        is_secure = settings.SESSION_COOKIE_SECURE
+
     site = Site.objects.get_current()
     host = site.domain
     if not absolute_http_url_re.match(location):
