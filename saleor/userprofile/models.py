@@ -66,6 +66,9 @@ class Address(models.Model):
     phone = models.CharField(
         pgettext_lazy('Address field', 'phone number'),
         max_length=30, blank=True)
+    terms_accepted = models.CharField(
+        pgettext_lazy('Address field', 'terms accepted'),
+        max_length=256, null=True, blank=True)
 
     objects = AddressManager()
 
@@ -82,11 +85,12 @@ class Address(models.Model):
         return (
             'Address(first_name=%r, last_name=%r, company_name=%r, '
             'street_address_1=%r, street_address_2=%r, city=%r, '
-            'postal_code=%r, country=%r, country_area=%r, phone=%r)' % (
+            'postal_code=%r, country=%r, country_area=%r, phone=%r, '
+            'terms_accepted=%r)' % (
                 self.first_name, self.last_name, self.company_name,
                 self.street_address_1, self.street_address_2, self.city,
                 self.postal_code, self.country, self.country_area,
-                self.phone))
+                self.phone, self.terms_accepted))
 
 
 class UserManager(BaseUserManager):
@@ -146,7 +150,17 @@ class User(PermissionsMixin, AbstractBaseUser):
     objects = UserManager()
 
     def get_full_name(self):
-        return self.email
+        return self.addresses.first().first_name + ' ' + self.addresses.first().last_name
 
     def get_short_name(self):
-        return self.email
+        return self.addresses.first().first_name
+
+    @property
+    def books(self):
+        from mini.cms.contrib.webbook.pages import BookPage
+        return BookPage.objects.available_for_user(user=self)
+
+    @property
+    def memberships(self):
+        from mini.organizations.models import Member
+        return Member.objects.filter(user=self)
