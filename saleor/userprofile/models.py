@@ -150,7 +150,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     objects = UserManager()
 
     def get_full_name(self):
-        return self.addresses.first().first_name + ' ' + self.addresses.first().last_name
+        if self.addresses.first() and self.addresses.first().first_name:
+            return self.addresses.first().first_name + ' ' + self.addresses.first().last_name
+        else:
+            return '-'
 
     def get_short_name(self):
         return self.addresses.first().first_name
